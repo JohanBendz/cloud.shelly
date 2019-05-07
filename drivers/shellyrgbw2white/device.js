@@ -11,6 +11,7 @@ class ShellyRGBW2WhiteDevice extends Homey.Device {
 
     // LISTENERS FOR UPDATING CAPABILITIES
     this.registerCapabilityListener('onoff', (value, opts) => {
+      console.log('changing onoff value to: ', value);
       if (value) {
         return util.sendCommand('/white/'+ this.getStoreValue('channel') +'?turn=on', this.getSetting('address'), this.getSetting('username'), this.getSetting('password'));
       } else {
@@ -20,6 +21,7 @@ class ShellyRGBW2WhiteDevice extends Homey.Device {
 
     this.registerCapabilityListener('dim', (value, opts) => {
       var dim = value * 100;
+      console.log('changing dim for channel '+ this.getStoreValue('channel') + ' to '+ dim);
       return util.sendCommand('/white/'+ this.getStoreValue('channel') +'?brightness='+ dim +'', this.getSetting('address'), this.getSetting('username'), this.getSetting('password'));
     });
 
@@ -41,6 +43,8 @@ class ShellyRGBW2WhiteDevice extends Homey.Device {
           let state = result.lights[channel].ison;
           let dim = result.lights[channel].brightness > 100 ? 1 : result.lights[channel].brightness / 100;
           let power = result.lights[channel].power;
+
+          console.log('current dim value for channel '+ this.getStoreValue('channel') + ' is '+ dim);
 
           // capability onoff
           if (state != this.getCapabilityValue('onoff')) {
