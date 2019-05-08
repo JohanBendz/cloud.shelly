@@ -11,7 +11,7 @@ class ShellyRGBW2WhiteDevice extends Homey.Device {
 
     // LISTENERS FOR UPDATING CAPABILITIES
     this.registerCapabilityListener('onoff', (value, opts) => {
-      console.log('changing onoff value to: ', value);
+      this.log('changing onoff value to: ', value);
       if (value) {
         return util.sendCommand('/white/'+ this.getStoreValue('channel') +'?turn=on', this.getSetting('address'), this.getSetting('username'), this.getSetting('password'));
       } else {
@@ -21,7 +21,7 @@ class ShellyRGBW2WhiteDevice extends Homey.Device {
 
     this.registerCapabilityListener('dim', (value, opts) => {
       var dim = value * 100;
-      console.log('changing dim for channel '+ this.getStoreValue('channel') + ' to '+ dim);
+      this.log('changing dim for channel '+ this.getStoreValue('channel') + ' to '+ dim);
       return util.sendCommand('/white/'+ this.getStoreValue('channel') +'?brightness='+ dim +'', this.getSetting('address'), this.getSetting('username'), this.getSetting('password'));
     });
 
@@ -44,15 +44,18 @@ class ShellyRGBW2WhiteDevice extends Homey.Device {
           let dim = result.lights[channel].brightness > 100 ? 1 : result.lights[channel].brightness / 100;
           let power = result.lights[channel].power;
 
-          console.log('current dim value for channel '+ this.getStoreValue('channel') + ' is '+ dim);
+
+          this.log('current dim value for channel '+ channel + ' is '+ result.lights[channel].brightness +' and is converted to '+ dim);
 
           // capability onoff
           if (state != this.getCapabilityValue('onoff')) {
+            this.log('changing onoff because shelly state returned '+ state +' while homey device onoff state is '+ this.getCapabilityValue('onoff'));
             this.setCapabilityValue('onoff', state);
           }
 
           // capability dim
           if (dim != this.getCapabilityValue('dim')) {
+            this.log('changing dim because shelly dim state returned '+ dim +' while homey device dim state is '+ this.getCapabilityValue('dim'));
             this.setCapabilityValue('dim', dim);
           }
 
