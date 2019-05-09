@@ -48,10 +48,10 @@ class ShellyRGBW2WhiteDevice extends Homey.Device {
           this.log('current dim value for channel '+ channel + ' is '+ result.lights[channel].brightness +' and is converted to '+ dim);
 
           // capability onoff
-          if (state != this.getCapabilityValue('onoff')) {
-            this.log('changing onoff because shelly state returned '+ state +' while homey device onoff state is '+ this.getCapabilityValue('onoff'));
-            this.setCapabilityValue('onoff', state);
-          }
+          //if (state != this.getCapabilityValue('onoff')) {
+          //  this.log('changing onoff because shelly state returned '+ state +' while homey device onoff state is '+ this.getCapabilityValue('onoff'));
+          //  this.setCapabilityValue('onoff', state);
+        //  }
 
           // capability dim
           if (dim != this.getCapabilityValue('dim')) {
