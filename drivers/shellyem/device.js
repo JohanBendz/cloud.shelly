@@ -3,7 +3,7 @@
 const Homey = require('homey');
 const util = require('/lib/util.js');
 
-class ShellyPlugDevice extends Homey.Device {
+class ShellyEmDevice extends Homey.Device {
 
   onInit() {
     var interval = this.getSetting('polling') || 5;
@@ -32,9 +32,13 @@ class ShellyPlugDevice extends Homey.Device {
     this.pollingInterval = setInterval(() => {
       util.sendCommand('/status', this.getSetting('address'), this.getSetting('username'), this.getSetting('password'))
         .then(result => {
+          let channel = this.getStoreValue('channel');
           let state = result.relays[0].ison;
-          let power = result.meters[0].power;
-          let total_consumption = result.meters[0].total;
+          let power = result.emeters[channel].power;
+          let reactive_power = result.emeters[channel].reactive;
+          let voltage = result.emeters[channel].voltage;
+          let total_consumed = result.emeters[channel].total;
+          let total_returned = result.emeters[channel].total_returned;
 
           // capability onoff
           if (state != this.getCapabilityValue('onoff')) {
@@ -46,11 +50,24 @@ class ShellyPlugDevice extends Homey.Device {
             this.setCapabilityValue('measure_power', power);
           }
 
-          // capability meter_power_wmin
-          if(this.hasCapability('meter_power_wmin')) {
-            if (total_consumption != this.getCapabilityValue('meter_power_wmin')) {
-              this.setCapabilityValue('meter_power_wmin', total_consumption);
-            }
+          // capability reactive_power
+          if (reactive_power != this.getCapabilityValue('reactive_power')) {
+            this.setCapabilityValue('reactive_power', reactive_power);
+          }
+
+          // capability measure_voltage
+          if (voltage != this.getCapabilityValue('measure_voltage')) {
+            this.setCapabilityValue('measure_voltage', voltage);
+          }
+
+          // capability meter_power_consumed
+          if (total_consumed != this.getCapabilityValue('meter_power_consumed')) {
+            this.setCapabilityValue('meter_power_consumed', total_consumed);
+          }
+
+          // capability meter_power_returned
+          if (total_returned != this.getCapabilityValue('meter_power_returned')) {
+            this.setCapabilityValue('meter_power_returned', total_returned);
           }
 
         })
@@ -81,4 +98,4 @@ class ShellyPlugDevice extends Homey.Device {
 
 }
 
-module.exports = ShellyPlugDevice;
+module.exports = ShellyEmDevice;
